@@ -3,9 +3,10 @@
 
 class ProductLoader
 {
+
     public static function getProduct(PDO $pdo, int $id):? array
     {
-        $query = $pdo->prepare('SELECT * FROM product WHERE product.id = :id');
+        $query = $pdo->prepare('SELECT * FROM calculator.product WHERE product.id = :id');
         $query->bindValue('id', $id);
         $query->execute();
         return $query->fetch();
@@ -13,7 +14,7 @@ class ProductLoader
 
     public static function getProducts(PDO $pdo): array
     {
-        $query = $pdo->query('SELECT * FROM product');
+        $query = $pdo->query('SELECT * FROM calculator.product');
         return $query->fetchAll();
     }
 }
