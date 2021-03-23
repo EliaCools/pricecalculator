@@ -19,16 +19,8 @@ require 'Controller/HomepageController.php';
 //this file should never be more than 20 lines of code!
 
 
-$customerController = new HomepageController();
-// $productController = new ProductController();
-// $customerGroupController = new CustomerGroupController();
+$controller = new HomepageController();
 
-if(isset($_GET['page']) && $_GET['page'] === 'overview') {
+$controller->render($_GET, $_POST);
 
-    //$controller->getperson($_GET,$_POST);
-}
-
-
-
-$customerController->product($_GET,$_POST);
 

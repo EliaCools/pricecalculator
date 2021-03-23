@@ -14,10 +14,13 @@ class Calculator
         $this->varDiscount = $varDiscount;
     }
 
+
+
     public function getPrice(): int
     {
         return $this->price;
     }
+
 
     public function setPrice(int $price): void
     {
@@ -42,6 +45,11 @@ class Calculator
     public function setVarDiscount(int $varDiscount): void
     {
         $this->varDiscount = $varDiscount;
+    }
+
+    public function maxDiscount (int $varDiscount) : void
+    {
+        //$value = max(CustomerGroupLoader::)
     }
 
 
