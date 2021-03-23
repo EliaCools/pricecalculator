@@ -17,4 +17,7 @@ class CustomerLoader
         return $query->fetchAll();
     }
 
+
+
+
 }
