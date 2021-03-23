@@ -9,10 +9,12 @@ class CustomerLoader
         $query->bindValue('id',$id);
         $query->execute();
         return $query->fetch();
-
     }
 
-
-
+     public static function allCustomers(PDO $pdo){
+        $query = $pdo->prepare('select * from calculator.customer c');
+        $query->execute();
+        return $query->fetchAll();
+    }
 
 }
