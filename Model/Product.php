@@ -14,6 +14,7 @@ class Product
         $this->price = $price;
     }
 
+
     public function getId(): int
     {
         return $this->id;

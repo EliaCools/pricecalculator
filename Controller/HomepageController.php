@@ -1,18 +1,30 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 class HomepageController
 {
-    //render function with both $_GET and $_POST vars available if it would be needed.
-    public function render(array $GET, array $POST)
+    private Connection $db;
+
+    public function __construct()
     {
-        //this is just example code, you can remove the line below
-        $user = new User('John Smith');
-
-        //you should not echo anything inside your controller - only assign vars here
-        // then the view will actually display them.
-
-        //load the view
-        require 'View/homepage.php';
+        $this->db = new Connection;
     }
+
+    public function Product(array $GET, array $POST)
+    {
+        $product = ProductLoader::getProduct($this->db, 3);
+        var_dump($product);
+        require '../View/homepage.php';
+    }
+
+//    function getperson(array $GET,array $POST){
+//
+//        $customer = CustomerLoader::personaldiscount($this->db, 3);
+//        var_dump($customer);
+//
+//        require 'View/homepage.php';
+//    }
+
+
+
 }
