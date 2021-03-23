@@ -22,7 +22,6 @@ class Customer
     }
 
 
-
     public function getId(): int
     {
         return $this->id;
