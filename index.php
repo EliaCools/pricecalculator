@@ -30,5 +30,5 @@ if(isset($_GET['page']) && $_GET['page'] === 'overview') {
 
 
 
-$customerController->product($_POST,$_POST);
+$customerController->product($_GET,$_POST);
 
