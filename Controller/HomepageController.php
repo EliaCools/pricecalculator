@@ -20,10 +20,10 @@ class HomepageController
 
         $customerLoader = new CustomerLoader();
 
-        $productloader = new ProductLoader();
+        $productLoader = new ProductLoader();
 
 
-        $singleProduct = $productloader->getProduct($this->db,3);
+        $singleProduct = $productLoader->getProduct($this->db,3);
         $product = new Product((int)$singleProduct['id'], $singleProduct['name'], (int)$singleProduct['price']);
 
             $products = $productLoader->getProducts($this->db);
