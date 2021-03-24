@@ -5,8 +5,8 @@ class CustomerGroupLoader
 {
 
 
-    public function loadGroup(PDO $pdo, $id){
-        $query = $pdo->prepare('select * FROM calculator.customer_group where id = :id');
+    public function loadGroup(PDO $pdo, $id): array{
+        $query = $pdo->prepare('select * FROM customer_group where id = :id');
         $query->bindValue('id',$id);
         $query->execute();
         return $query->fetch();
@@ -14,7 +14,7 @@ class CustomerGroupLoader
 
 
 
-      public  function loadGroups(PDO $pdo, $id){
+      public  function loadGroups(PDO $pdo, $id): array{
           $groups = [];
           $groups[]  = $this->loadGroup( $pdo, $id );
 

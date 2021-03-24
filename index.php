@@ -5,6 +5,7 @@ declare(strict_types=1);
 require 'Model/Customer.php';
 require 'Model/CustomerLoader.php';
 require 'Model/CustomerGroup.php';
+require 'Model/CustomerGroupLoader.php';
 require 'Model/Product.php';
 require 'Model/Calculator.php';
 require 'Model/Connection.php';

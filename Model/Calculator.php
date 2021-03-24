@@ -7,11 +7,11 @@ class Calculator
     private int $fixDiscount;
     private int $varDiscount;
 
-    public function __construct(int $price, int $fixDiscount, int $varDiscount)
+    public function __construct()
     {
-        $this->price = $price;
-        $this->fixDiscount = $fixDiscount;
-        $this->varDiscount = $varDiscount;
+       // $this->price = $price;
+       // $this->fixDiscount = $fixDiscount;
+       // $this->varDiscount = $varDiscount;
     }
 
 
@@ -47,9 +47,31 @@ class Calculator
         $this->varDiscount = $varDiscount;
     }
 
-    public function maxDiscount (int $varDiscount) : void
+    public function calculatePrice($pdo, $id){
+        $itemPrice =20;
+        $itemPrice -= $this->totalFixDiscount($pdo, $id);
+        $itemPrice -= $this->maxVarDiscount($pdo, $id);
+        return $itemPrice;
+    }
+
+    public function totalFixDiscount($pdo, $id){
+        $fixDiscount = [];
+        $customerLoader = new CustomerGroupLoader();
+        foreach ($customerLoader->loadGroups($pdo, $id) as $group){
+            $fixDiscount[] = $group["fixed_discount"];
+        }
+       return array_sum($fixDiscount);
+    }
+
+    public function maxVarDiscount ($pdo, $id)
     {
-        //$value = max(CustomerGroupLoader::)
+        $variableDiscount = [];
+        $customerLoader = new CustomerGroupLoader();
+        foreach($customerLoader->loadGroups($pdo, $id) AS $group){
+            $variableDiscount[] =   $group["variable_discount"];
+        }
+
+        return max($variableDiscount);
     }
 
 
