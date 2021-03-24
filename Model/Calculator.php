@@ -47,10 +47,6 @@ class Calculator
         $this->varDiscount = $varDiscount;
     }
 
-    public function calculatePrice($pdo, $id){
-
-    }
-
     public function totalFixDiscount($pdo, $customer){
         $fixDiscount = [];
         $customerLoader = new CustomerGroupLoader();
@@ -69,14 +65,12 @@ class Calculator
        return max($fixDiscount);
     }
 
-
-
     public function maxVarDiscount ($pdo, $customer) : int
     {
         $variableDiscount = [];
         $customerLoader = new CustomerGroupLoader();
         foreach($customerLoader->loadGroups($pdo, $customer->getGroupId()) AS $group){
-            $variableDiscount[] =   $group["variable_discount"];
+            $variableDiscount[] = $group["variable_discount"];
         }
         return max($variableDiscount);
     }
