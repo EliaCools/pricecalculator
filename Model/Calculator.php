@@ -47,42 +47,111 @@ class Calculator
         $this->varDiscount = $varDiscount;
     }
 
-    public function calculatePrice($pdo, $id){
-
-    }
-
-    public function totalFixDiscount($pdo, $id){
+    public function totalFixDiscount($pdo, $customer){
         $fixDiscount = [];
         $customerLoader = new CustomerGroupLoader();
-        foreach ($customerLoader->loadGroups($pdo, $id) as $group){
+        foreach ($customerLoader->loadGroups($pdo, $customer->getGroupId()) as $group){
             $fixDiscount[] = $group["fixed_discount"];
         }
        return array_sum($fixDiscount);
     }
 
-    public function maxVarDiscount ($pdo, $id)
+       public function maxFixDiscount($pdo, $customer){
+        $fixDiscount = [];
+        $customerLoader = new CustomerGroupLoader();
+        foreach ($customerLoader->loadGroups($pdo, $customer->getGroupId()) as $group){
+            $fixDiscount[] = $group["fixed_discount"];
+        }
+       return max($fixDiscount);
+    }
+
+    public function maxVarDiscount ($pdo, $customer) : int
     {
         $variableDiscount = [];
         $customerLoader = new CustomerGroupLoader();
-        foreach($customerLoader->loadGroups($pdo, $id) AS $group){
-            $variableDiscount[] =   $group["variable_discount"];
+        foreach($customerLoader->loadGroups($pdo, $customer->getGroupId()) AS $group){
+            $variableDiscount[] = $group["variable_discount"];
         }
         return max($variableDiscount);
     }
 
-    public function mostValue($pdo, $id,$firstName,$lastName,$groupId,$fixDiscount,$varDiscount)
+
+
+
+
+    public function percentIsHighestGroup($pdo, $product, $customer)
     {
-        $customerDiscount = new Customer($id,$firstName,$lastName,$groupId,$fixDiscount,$varDiscount);
-        $customerfixDiscount = $customerDiscount->getFixDiscount();
-        $customervarDiscount= $customerDiscount->getVarDiscount();
-        $customerLoader = new CustomerLoader();
+        $productLoader = new ProductLoader();
+        //$product = new Product($id,$name, $price);
+        $product = $productLoader->getProduct($pdo, $product->getId());
+        $productPrice = (int)$product["price"]/100;
+
+        $percentDiscount = $this->maxVarDiscount($pdo,$customer);
+        $fixedDiscount= $this->totalFixDiscount($pdo,$customer);
+        $percentInDecimal = $percentDiscount/100;
+
+        $percentFromPrice = $productPrice * $percentInDecimal;
+        $fixedFromPrice = $productPrice-$fixedDiscount;
+
+        if($percentFromPrice>$fixedFromPrice){
+            return true;
+        }else{
+            return false;
+        }
+
     }
+
+    public function checkCustomerDiscount($pdo, $product, $customer){
+        $fixedDiscount = (int)$customer->getFixDiscount();
+        $varDiscount = $customer->getVarDiscount();
+        $productPrice = $product->getPrice()/100;
+
+
+     if($this->percentIsHighestGroup($pdo,$product,$customer) ===true){
+
+
+             if($varDiscount>$this->maxVarDiscount($pdo,$customer)){
+                 $percentDiscount = $varDiscount;
+                 $percentInDecimal = $percentDiscount/100;
+
+                 if(!is_null($fixedDiscount)){
+                     $priceMinFixed = $productPrice - $fixedDiscount ;
+                 }else{
+                     $priceMinFixed= $productPrice;
+                 }
+                  $totalPrice = $priceMinFixed * $percentInDecimal;
+
+                  var_dump($totalPrice);
+
+             }else{
+
+                 $percentDiscount = $this->maxVarDiscount($pdo,$customer);
+                 $percentInDecimal = $percentDiscount/100;
+                 $priceMinFixed = $productPrice;
+                 $totalPrice =    $priceMinFixed * $percentInDecimal;
+                 var_dump($totalPrice);
+             }
+
+         }
+
+     if($this->percentIsHighestGroup($pdo,$product,$customer) ===false){
+         //$fixedDiscount + $this->maxFixDiscount($pdo, $customer);
+         var_dump($productPrice);
+
+     }
+    }
+
+
+
+
+
 
     public function comparePercentage($pdo,$id,$firstName,$lastName,$groupId,$fixDiscount,$varDiscount){
         $customerDiscount = new Customer($id,$firstName,$lastName,$groupId,$fixDiscount,$varDiscount);
+
         $customervarDiscount= $customerDiscount->getVarDiscount();
-        $this->maxVarDiscount($pdo, $id);
-        return max($customervarDiscount,$this->maxVarDiscount($pdo,$id));
+
+        return max($customervarDiscount,$this->maxVarDiscount($pdo,$groupId));
     }
 
 }
