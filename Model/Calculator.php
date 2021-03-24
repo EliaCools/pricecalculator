@@ -48,10 +48,7 @@ class Calculator
     }
 
     public function calculatePrice($pdo, $id){
-        $itemPrice =20;
-        $itemPrice -= $this->totalFixDiscount($pdo, $id);
-        $itemPrice -= $this->maxVarDiscount($pdo, $id);
-        return $itemPrice;
+
     }
 
     public function totalFixDiscount($pdo, $id){
@@ -70,9 +67,22 @@ class Calculator
         foreach($customerLoader->loadGroups($pdo, $id) AS $group){
             $variableDiscount[] =   $group["variable_discount"];
         }
-
         return max($variableDiscount);
     }
 
+    public function mostValue($pdo, $id,$firstName,$lastName,$groupId,$fixDiscount,$varDiscount)
+    {
+        $customerDiscount = new Customer($id,$firstName,$lastName,$groupId,$fixDiscount,$varDiscount);
+        $customerfixDiscount = $customerDiscount->getFixDiscount();
+        $customervarDiscount= $customerDiscount->getVarDiscount();
+        $customerLoader = new CustomerLoader();
+    }
+
+    public function comparePercentage($pdo,$id,$firstName,$lastName,$groupId,$fixDiscount,$varDiscount){
+        $customerDiscount = new Customer($id,$firstName,$lastName,$groupId,$fixDiscount,$varDiscount);
+        $customervarDiscount= $customerDiscount->getVarDiscount();
+        $this->maxVarDiscount($pdo, $id);
+        return max($customervarDiscount,$this->maxVarDiscount($pdo,$id));
+    }
 
 }
