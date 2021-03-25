@@ -41,8 +41,8 @@ class HomepageController
         }
 
         require 'View/homepage.php';
-        header('Location: View/homepage.php');
-        exit;
+//        header('Location: View/homepage.php');
+//        exit;
         
     }
 }
