@@ -4,26 +4,22 @@
 class CustomerGroupLoader
 {
 
-
-    public function loadGroup(PDO $pdo, $id): array{
-        $query = $pdo->prepare('select * FROM customer_group where id = :id');
-        $query->bindValue('id',$id);
+    public function loadGroup(PDO $pdo, int $id): array
+    {
+        $query = $pdo->prepare('SELECT * FROM customer_group WHERE id = :id');
+        $query->bindValue('id', $id);
         $query->execute();
         return $query->fetch();
     }
 
+    public function loadGroups(PDO $pdo, int $id): array
+    {
+        $groups = [];
+        $groups[] = $this->loadGroup($pdo, $id);
 
-
-      public  function loadGroups(PDO $pdo, $id): array{
-          $groups = [];
-          $groups[]  = $this->loadGroup( $pdo, $id );
-
-          while(!is_null(end($groups)["parent_id"])){
-            $groups[] =  $this ->loadGroup($pdo,end($groups)["parent_id"]);
-          }
-
-          return $groups;
-      }
-
-
+        while (!is_null(end($groups)["parent_id"])) {
+            $groups[] = $this->loadGroup($pdo, end($groups)["parent_id"]);
+        }
+        return $groups;
+    }
 }
