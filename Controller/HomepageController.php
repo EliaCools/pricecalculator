@@ -23,7 +23,7 @@ class HomepageController
         $message = '';
         $messagep2 ='';
 
-        if (isset($_POST['submit'])) {
+        if (isset($_POST['submit']) && (!empty($_POST['customerid']) && !empty($_POST['productid']))) {
             $singleProduct = $productLoader->getProduct($this->db, (int)$_POST['productid']);
 
             $product = new Product((int)$singleProduct['id'], $singleProduct['name'], (int)$singleProduct['price']);
