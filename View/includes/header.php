@@ -6,9 +6,9 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <title>Becode - Boiler plate MVC</title>
+    <title>Customer & product discount exercise</title>
 </head>
 <body>
     <header>
-        <h1>Welcome to my site</h1>
+        <h1 class="d-flex justify-content-center p-5">Welcome to the discount page!</h1>
     </header>

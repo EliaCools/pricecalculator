@@ -20,10 +20,13 @@ class HomepageController
         $products = $productLoader->getProducts($this->db);
         $customers = $customerLoader->allCustomers($this->db);
         $calculatedPrice = '';
-        $message = '';
-        $messagep2 ='';
+        $message = $messagep2 ='';
+        $error = '';
 
-        if (isset($_POST['submit']) && (!empty($_POST['customerid']) && !empty($_POST['productid']))) {
+        $singleCustomer['name'] = '';
+        $singleProduct['name'] = '';
+
+        if (isset($_POST['submit'],$_POST['productid'],$_POST['customerid'])) {
             $singleProduct = $productLoader->getProduct($this->db, (int)$_POST['productid']);
 
             $product = new Product((int)$singleProduct['id'], $singleProduct['name'], (int)$singleProduct['price']);
@@ -34,14 +37,11 @@ class HomepageController
             $message=  " has to pay &euro; " ;
             $messagep2=" for a(n) ";
             $calculatedPrice = $calculator->checkCustomerDiscount($this->db, $product, $customer);
-
-
         }
-
+        else if (isset($_POST['submit']) && (!isset($_POST['productid'],$_POST['customerid']))){
+            $error = 'Please select a customer and product from the dropdown.';
+        }
         require 'View/homepage.php';
-//        header('Location: View/homepage.php');
-//        exit;
-        
     }
 }
 

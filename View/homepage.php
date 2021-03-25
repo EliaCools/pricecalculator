@@ -1,5 +1,5 @@
 <?php require 'includes/header.php' ?>
-    <section>
+    <section class="d-flex justify-content-center p-1">
         <form method="post">
             <select name="productid">
                 <option disabled selected value> -- select an option -- </option>
@@ -18,6 +18,7 @@
             <input type="submit" name="submit">
         </form>
         <h3><?php echo $singleCustomer["name"] . $message . $calculatedPrice . $messagep2 . $singleProduct["name"];?></h3>
+        <p><?php echo $error;?></p>
     </section>
 
 <?php require 'includes/footer.php'; ?>
