@@ -4,18 +4,16 @@ declare(strict_types=1);
 class Customer
 {
     private int $id;
-    private string $firstName;
-    private string $lastName;
+    private string $name;
     private int $groupId;
     private int $fixDiscount;
     private int $varDiscount;
 
 
-    public function __construct(int $id, string $firstName, string $lastName, int $groupId, int $fixDiscount, int $varDiscount)
+    public function __construct(int $id, string $name, int $groupId, int $fixDiscount, int $varDiscount)
     {
         $this->id = $id;
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
+        $this->name = $name;
         $this->groupId = $groupId;
         $this->fixDiscount = $fixDiscount;
         $this->varDiscount = $varDiscount;

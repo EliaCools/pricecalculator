@@ -12,12 +12,12 @@
                 <option disabled selected value> -- select an option -- </option>
                 <?php foreach ($customers as $customer): ?>
 
-                    <option value="<?php echo $customer['id']; ?>"><?php echo $customer['firstname'] ?></option>
+                    <option value="<?php echo $customer['id']; ?>"><?php echo $customer['name']  ?></option>
                 <?php endforeach; ?>
             </select>
             <input type="submit" name="submit">
         </form>
-        <h3><?php echo $calculatedPrice;?></h3>
+        <h3><?php echo $singleCustomer["name"] . $message . $calculatedPrice . $messagep2 . $singleProduct["name"];?></h3>
     </section>
 
 <?php require 'includes/footer.php'; ?>
