@@ -1,11 +1,12 @@
 <?php
-
+// @toDo felicia endprice mirror = 0     mousepad ->   (double checked) buddy endprice -> 40.49
 
 class Calculator
 {
     private int $price;
     private int $fixDiscount;
     private int $varDiscount;
+    public const MAGIC_DIVIDER = 100;
 
     public function __construct()
     {
@@ -45,33 +46,43 @@ class Calculator
     {
         $this->varDiscount = $varDiscount;
     }
-
+   // @toDo functie klopt (ong)
     public function totalFixDiscount($pdo, $customer)
     {
         $fixDiscount = [];
         $customerLoader = new CustomerGroupLoader();
         foreach ($customerLoader->loadGroups($pdo, $customer->getGroupId()) as $group) {
-            $fixDiscount[] = $group["fixed_discount"];
+            if(!is_null($group["fixed_discount"])) {
+                $fixDiscount[] = $group["fixed_discount"];
+            }
         }
         return array_sum($fixDiscount);
     }
 
-    public function maxFixDiscount($pdo, $customer)
-    {
-        $fixDiscount = [];
-        $customerLoader = new CustomerGroupLoader();
-        foreach ($customerLoader->loadGroups($pdo, $customer->getGroupId()) as $group) {
-            $fixDiscount[] = $group["fixed_discount"];
-        }
-        return max($fixDiscount);
-    }
-
-    public function maxVarDiscount($pdo, $customer): int
+   // public function maxFixDiscount($pdo, $customer)
+   // {
+   //     $fixDiscount = [];
+   //     $customerLoader = new CustomerGroupLoader();
+   //     foreach ($customerLoader->loadGroups($pdo, $customer->getGroupId()) as $group) {
+   //         if(!is_null($group["fixed_discount"])) {
+   //             $fixDiscount[] = $group["fixed_discount"];
+   //         }
+   //     }
+   //     return max($fixDiscount);
+   // }
+    // @toDo basic array klopt
+    public function maxGroupVarDis($pdo, $customer): int
     {
         $variableDiscount = [];
         $customerLoader = new CustomerGroupLoader();
         foreach ($customerLoader->loadGroups($pdo, $customer->getGroupId()) as $group) {
-            $variableDiscount[] = $group["variable_discount"];
+            if(!is_null($group["variable_discount"])){
+             $variableDiscount[] = $group["variable_discount"];
+            }
+
+        }
+        if(empty($variableDiscount)){
+            return 0;
         }
         return max($variableDiscount);
     }
@@ -79,57 +90,76 @@ class Calculator
 
     public function percentIsHighestGroup($pdo, $product, $customer): bool
     {
-        $productLoader = new ProductLoader();
-        $product = $productLoader->getProduct($pdo, $product->getId());
-        $productPrice = (int)$product["price"] / 100;
 
-        $percentDiscount = $this->maxVarDiscount($pdo, $customer);
+        $productPrice = (float)$product->getPrice() / self::MAGIC_DIVIDER;
+
+        $percentDiscount = $this->maxGroupVarDis($pdo, $customer);
         $fixedDiscount = $this->totalFixDiscount($pdo, $customer);
-        $percentInDecimal = $percentDiscount / 100;
-        $fixedFromPrice = $productPrice - $fixedDiscount;
-        $percentFromPrice = $productPrice * $percentInDecimal;
 
-        if ($percentFromPrice > $fixedFromPrice) {
+        $percentInDecimal = $percentDiscount / self::MAGIC_DIVIDER;
+
+
+            $fixedFromPrice = $productPrice - $fixedDiscount;
+
+            $percentFromPrice = $productPrice - ($productPrice * $percentInDecimal);
+
+
+
+        var_dump($fixedFromPrice);
+        var_dump($percentFromPrice);
+
+        if ($percentFromPrice < $fixedFromPrice) {
             return true;
         } else {
             return false;
         }
     }
 
-    public function checkCustomerDiscount($pdo, $product, $customer)
+// @toDo felicia endprice mirror = 0     mousepad ->   (double checked) buddy endprice -> 40.49
+    public function checkCustomerDiscount($pdo, Product $product, Customer $customer)
     {
         $fixedDiscount = (int)$customer->getFixDiscount();
-        $varDiscount = $customer->getVarDiscount();
-        $productPrice = $product->getPrice() / 100;
+        $cusVarDis = $customer->getVarDiscount();
+        $productPrice = (float)$product->getPrice() / self::MAGIC_DIVIDER;
 
 
         if ($this->percentIsHighestGroup($pdo, $product, $customer) === true) {
-            if ($varDiscount > $this->maxVarDiscount($pdo, $customer)) {
-                $percentDiscount = $varDiscount;
-                $percentInDecimal = $percentDiscount / 100;
+            if ($cusVarDis > $this->maxGroupVarDis($pdo, $customer)) {
+                $percentDiscount = $cusVarDis;
+                $percentInDecimal = (float)$percentDiscount / self::MAGIC_DIVIDER;
 
                 if (!is_null($fixedDiscount)) {
                     $priceMinFixed = $productPrice - $fixedDiscount;
+
                 } else {
                     $priceMinFixed = $productPrice;
                 }
-                $totalPrice = $priceMinFixed * $percentInDecimal;
+                $totalPrice = $priceMinFixed - ($priceMinFixed * $percentInDecimal);
+
             } else {
-                $percentDiscount = $this->maxVarDiscount($pdo, $customer);
-                $percentInDecimal = $percentDiscount / 100;
-                $priceMinFixed = $productPrice;
-                $totalPrice = $priceMinFixed * $percentInDecimal;
+                $percentDiscount = $this->maxGroupVarDis($pdo, $customer);
+                $percentInDecimal = (float)$percentDiscount / self::MAGIC_DIVIDER;
+
+                if (!is_null($fixedDiscount)) {
+                    $priceMinFixed = $productPrice - $fixedDiscount;
+
+                } else {
+                    $priceMinFixed = $productPrice;
+                }
+                $totalPrice = $priceMinFixed - ((float)$percentInDecimal * $priceMinFixed);
             }
         }
 
         if ($this->percentIsHighestGroup($pdo, $product, $customer) === false) {
             if (!is_null($fixedDiscount)) {
-                $totalPrice = $fixedDiscount + $this->maxFixDiscount($pdo, $customer);
+                $totalPrice = $productPrice - ($fixedDiscount + $this->totalFixDiscount($pdo, $customer));
+
             } else {
-                $percentDiscount = $varDiscount;
-                $percentInDecimal = $percentDiscount / 100;
-                $priceMinFixed = $productPrice - $this->maxFixDiscount($pdo, $customer);
-                $totalPrice = $priceMinFixed * $percentInDecimal;
+                $percentDiscount = $cusVarDis;
+                $percentInDecimal = (float)$percentDiscount / self::MAGIC_DIVIDER;
+                $priceMinFixed = $productPrice - $this->totalFixDiscount($pdo, $customer);
+                $totalPrice = $priceMinFixed - ((float)$percentInDecimal * $percentInDecimal);
+                var_dump($fixedDiscount);
             }
 
         }
@@ -143,6 +173,6 @@ class Calculator
     {
         $customerDiscount = new Customer($id, $firstName, $lastName, $groupId, $fixDiscount, $varDiscount);
         $customervarDiscount = $customerDiscount->getVarDiscount();
-        return max($customervarDiscount, $this->maxVarDiscount($pdo, $groupId));
+        return max($customervarDiscount, $this->maxGroupVarDis($pdo, $groupId));
     }
 }

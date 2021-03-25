@@ -21,6 +21,7 @@ class CustomerGroupLoader
           while(!is_null(end($groups)["parent_id"])){
             $groups[] =  $this ->loadGroup($pdo,end($groups)["parent_id"]);
           }
+
           return $groups;
       }
 
