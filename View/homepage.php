@@ -12,17 +12,17 @@
             <select class="custom-select mr-sm-1" name="customerid">
                 <option disabled selected value> select a person  </option>
                 <?php foreach ($customers as $customer): ?>
-
-                    <option value="<?php echo $customer['id']; ?>"><?php echo $customer['name']  ?></option>
+                    <option value="<?php echo $customer['id']; ?>"><?php echo $customer['name'] ?></option>
                 <?php endforeach; ?>
             </select>
             <input type="submit" name="submit" class="btn btn-primary mb-2">
         </form>
-        </div >
-        <div class="d-flex justify-content-center p-1" >
-        <h3><?php echo $singleCustomer["name"] . $message . $calculatedPrice . $messagep2 . $singleProduct["name"];?></h3>
-        <p><?php echo $error;?></p>
-        </div>
+        <?php if (isset($customerMessage)): ?>
+            <h3><?php echo $singleCustomer["name"] . " has to pay &euro; " . $calculatedPrice . " for a(n) " . $singleProduct['name']; ?></h3>
+        <?php endif; ?>
+        <?php if (isset($error)): ?>
+            <p><?php echo $error; ?></p>
+        <?php endif; ?>
     </section>
 
 <?php require 'includes/footer.php'; ?>

@@ -3,7 +3,7 @@
 
 class Connection extends PDO
 {
-    function __construct()
+    public function __construct()
     {
         $driverOptions = [
             PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'",

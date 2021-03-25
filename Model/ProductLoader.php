@@ -3,7 +3,7 @@
 
 class ProductLoader
 {
-    public function getProduct(PDO $pdo, int $id):? array
+    public function getProduct(PDO $pdo, int $id): ?array
     {
         $query = $pdo->prepare('SELECT * FROM product WHERE product.id = :id');
         $query->bindValue('id', $id);

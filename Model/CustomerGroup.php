@@ -19,16 +19,9 @@ class CustomerGroup
         $this->varDiscount = $varDiscount;
     }
 
-
-
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
     }
 
     public function getName(): string
@@ -36,19 +29,9 @@ class CustomerGroup
         return $this->name;
     }
 
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
-
     public function getParentId(): int
     {
         return $this->parentId;
-    }
-
-    public function setParentId(int $parentId): void
-    {
-        $this->parentId = $parentId;
     }
 
     public function getFixDiscount(): int
@@ -56,21 +39,8 @@ class CustomerGroup
         return $this->fixDiscount;
     }
 
-    public function setFixDiscount(int $fixDiscount): void
-    {
-        $this->fixDiscount = $fixDiscount;
-    }
-
     public function getVarDiscount(): int
     {
         return $this->varDiscount;
     }
-
-    public function setVarDiscount(int $varDiscount): void
-    {
-        $this->varDiscount = $varDiscount;
-    }
-
-
-
 }
