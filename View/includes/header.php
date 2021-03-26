@@ -11,5 +11,4 @@
 </head>
 <body>
 <header>
-    <h1 class="d-flex justify-content-center p-5">Welcome to the discount page!</h1>
 </header>

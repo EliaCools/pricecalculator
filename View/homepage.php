@@ -1,4 +1,5 @@
 <?php require 'includes/header.php' ?>
+    <h1 class="d-flex justify-content-center p-5">Welcome to the discount page!</h1>
     <section class="min-vh-100">
         <div class="d-flex justify-content-center p-1">
             <form method="post" class="form-inline">
@@ -51,5 +52,8 @@
         </table>
     </div>
 
+    <form method="post">
+        <button name="logout">Log out</button>
+    </form>
 
 <?php require 'includes/footer.php'; ?>

@@ -29,11 +29,16 @@ class HomepageController
             $productPrice = $product->getPrice() / Calculator::MAGIC_DIVIDER;
             $productName = $product->getName();
 
-            $calculatedPrice = $calculator->checkCustomerDiscount($this->db, $product,  $customer);
+            $calculatedPrice = $calculator->checkCustomerDiscount($this->db, $product, $customer);
 
         } else if (isset($_POST['submit']) && (!isset($_POST['productId'], $_POST['customerId']))) {
             $error = 'Please select a customer and product from the dropdown.';
         }
+
+        if (isset($_POST['logout'])){
+            unset($_SESSION['logged_in']);
+        }
+
         require 'View/homepage.php';
     }
 }
