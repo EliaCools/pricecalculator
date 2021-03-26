@@ -5,14 +5,37 @@ class Calculator
     private int $price;
     private int $fixDiscount;
     private int $varDiscount;
+    private float $priceMinusPercentageGroup;
+    private float $priceMinusFixedGroup;
     public const MAGIC_DIVIDER = 100;
+    private float $totalDiscount;
 
-//    public function __construct($price,$fixDiscount,$varDiscount)
-//    {
-//         $this->price = $price;
-//         $this->fixDiscount = $fixDiscount;
-//         $this->varDiscount = $varDiscount;
-//    }
+
+    public function getTotalDiscount(): float
+    {
+        return $this->totalDiscount;
+    }
+
+
+    public function getPriceMinusPercentageGroup(): float
+    {
+        return $this->priceMinusPercentageGroup;
+    }
+
+
+    public function getPriceMinusFixedGroup(): float
+    {
+        return $this->priceMinusFixedGroup;
+    }
+
+
+   public function __construct()
+   {
+       // $this->price = $price;
+       // $this->fixDiscount = $fixDiscount;
+       // $this->varDiscount = $varDiscount;
+   }
+
 
     public function getPrice(): int
     {
@@ -41,17 +64,6 @@ class Calculator
         return array_sum($fixDiscount);
     }
 
-    // public function maxFixDiscount($pdo, $customer)
-    // {
-    //     $fixDiscount = [];
-    //     $customerLoader = new CustomerGroupLoader();
-    //     foreach ($customerLoader->loadGroups($pdo, $customer->getGroupId()) as $group) {
-    //         if(!is_null($group["fixed_discount"])) {
-    //             $fixDiscount[] = $group["fixed_discount"];
-    //         }
-    //     }
-    //     return max($fixDiscount);
-    // }
     public function maxGroupVarDis(PDO $pdo, Customer $customer): int
     {
         $variableDiscount = [];
@@ -71,17 +83,16 @@ class Calculator
     {
         $productPrice = (float)$product->getPrice() / self::MAGIC_DIVIDER;
 
-        $discountPercentage = $this->maxGroupVarDis($pdo, $customer);
-        $percentInDecimal = $discountPercentage / self::MAGIC_DIVIDER;
+        $percentInDecimal = $this->maxGroupVarDis($pdo, $customer)/ self::MAGIC_DIVIDER;
 
-        $totalFixedDiscount = $this->totalFixDiscount($pdo, $customer);
-
-        $priceMinusFixed = $productPrice - $totalFixedDiscount;
+        $priceMinusFixed = $productPrice -  $this->totalFixDiscount($pdo, $customer);
         $priceMinusPercentage = $productPrice - ($productPrice * $percentInDecimal);
 
         if ($priceMinusPercentage < $priceMinusFixed) {
+            $this->priceMinusPercentageGroup = $priceMinusPercentage;
             return true;
         }
+        $this->priceMinusFixedGroup = $priceMinusFixed;
         return false;
     }
 
@@ -96,11 +107,15 @@ class Calculator
                 $percentInDecimal = (float)$customerDiscountPercentage / self::MAGIC_DIVIDER;
 
                 if (!is_null($customerFixedDiscount)) {
+                    $fixedDiscount = $customerFixedDiscount;
                     $priceMinusFixed = $productPrice - $customerFixedDiscount;
 
+
                 } else {
+                    $fixedDiscount = 0;
                     $priceMinusFixed = $productPrice;
                 }
+                $this->totalDiscount= round($fixedDiscount + ($priceMinusFixed * $percentInDecimal));
                 $totalPrice = $priceMinusFixed - ($priceMinusFixed * $percentInDecimal);
 
             } else {
@@ -108,28 +123,34 @@ class Calculator
                 $percentInDecimal = (float)$discountPercentage / self::MAGIC_DIVIDER;
 
                 if (!is_null($customerFixedDiscount)) {
+                    $fixedDiscount=$customerFixedDiscount;
                     $priceMinusFixed = $productPrice - $customerFixedDiscount;
 
                 } else {
+                    $fixedDiscount=0;
                     $priceMinusFixed = $productPrice;
                 }
+                $this->totalDiscount= round($fixedDiscount + ((float)$percentInDecimal * $priceMinusFixed),2);
                 $totalPrice = $priceMinusFixed - ((float)$percentInDecimal * $priceMinusFixed);
+
             }
         }
 
         if ($this->percentIsHighestGroup($pdo, $product, $customer) === false) {
-            if (!is_null($customerFixedDiscount)) {
-                $percentInDecimal = (float)$customerDiscountPercentage / self::MAGIC_DIVIDER;
 
+            $percentInDecimal = (float)$customerDiscountPercentage / self::MAGIC_DIVIDER;
+            if (!is_null($customerFixedDiscount)) {
+                $fixedDiscount = $customerFixedDiscount + $this->totalFixDiscount($pdo, $customer);
                 $priceMinusFixed = $productPrice - ($customerFixedDiscount + $this->totalFixDiscount($pdo, $customer));
-                $totalPrice = $priceMinusFixed - ((float)$percentInDecimal * $priceMinusFixed);
 
             } else {
-                $percentInDecimal = (float)$customerDiscountPercentage / self::MAGIC_DIVIDER;
-
+                $fixedDiscount = $this->totalFixDiscount($pdo, $customer);
                 $priceMinusFixed = $productPrice - $this->totalFixDiscount($pdo, $customer);
-                $totalPrice = $priceMinusFixed - ((float)$percentInDecimal * $priceMinusFixed);
+                $this->totalDiscount= (float)$percentInDecimal * $this->totalFixDiscount($pdo, $customer);
+
             }
+            $this->totalDiscount= round($fixedDiscount + ((float)$percentInDecimal * $priceMinusFixed),2) ;
+            $totalPrice = $priceMinusFixed - ((float)$percentInDecimal * $priceMinusFixed);
         }
         if ($totalPrice < 0) {
             $totalPrice = 0;
