@@ -37,6 +37,8 @@ class HomepageController
 
         if (isset($_POST['logout'])){
             unset($_SESSION['logged_in']);
+            header('Location: ?logged_in=false');
+            exit;
         }
 
         require 'View/homepage.php';

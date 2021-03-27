@@ -3,6 +3,7 @@
 
 class loginController
 {
+
     private Connection $db;
 
     public function __construct()
@@ -12,20 +13,25 @@ class loginController
 
     public function render(array $POST, array $GET)
     {
+
+
+
         if (isset($_POST['email'], $_POST['password'])) {
 
             $customerLoader = new CustomerLoader();
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-            $result = $customerLoader->login($this->db, $email, $password);
-            if (!is_null($result)){
+            $result = $customerLoader->loginCheck($this->db, $_POST['email']);
+            if ($result !== false && password_verify($_POST['password'], $result['password'])){
                 $_SESSION['logged_in'] = true;
-                var_dump($customerLoader->login($this->db,$email,$password));
+                header('Location: ?logged_in=true');
+                exit;
+
+
             }
             else {
                 $msg = 'Wrong login details';
             }
         }
+
         require 'View/login.php';
     }
 }

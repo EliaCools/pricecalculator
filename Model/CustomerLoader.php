@@ -20,21 +20,14 @@ class CustomerLoader
         $query = $pdo->prepare('SELECT id, concat_ws(" ", c.firstname, c.lastname) AS name , group_id , fixed_discount, variable_discount FROM customer c');
         $query->execute();
         return $query->fetchAll();
-
-        // foreach ($rows AS ['id' => $id ]  ){
-        //     $rows[] = new Customer($id,)
-//
-//
-        // }
-
     }
 
-    public function login(PDO $pdo, string $email, string $password) : bool
+    public function loginCheck(PDO $pdo, string $email)
     {
-        $query = $pdo->prepare(('SELECT email, password FROM customer c WHERE email = :email AND  password = :password'));
+        $query = $pdo->prepare(('SELECT email, password FROM customer c WHERE email = :email'));
         $query->bindValue('email', $email);
-        $query->bindValue('password', $password);
         $query->execute();
         return $query->fetch();
+
     }
 }
